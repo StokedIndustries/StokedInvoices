@@ -1,3 +1,11 @@
-#Stoked Invoices#
+Stoked Invoices
 
 An invoicing system for SilverStripe.
+
+INSTALLATION:
+
+Download and extract to your SilverStripe directory. Rename the directory to "stokedinvoices" and run dev/build.
+
+USAGE:
+
+You will get two things: an Invoices tab in the admin, and an Invoices page in the SiteTree. The tab is to be used for managing invoices, while the invoice page is to be used for options, etc.
