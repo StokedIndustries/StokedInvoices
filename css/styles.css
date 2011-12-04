@@ -1,0 +1,208 @@
+/**
+ * 	Invoice Styles
+ * 
+ * 	@package stokedinvoices
+ */
+ 
+
+.stokedinvoices .inv-header {
+	padding: 0 0 13px 0;
+	margin-bottom: 13px;
+	font-size: 18px;
+	border-bottom: 1px dashed #cecece;
+}
+.stokedinvoices .inv-header .ref {
+	font-weight: bold;
+	padding-left: 18px;
+}
+.stokedinvoices .inv-header .date {
+	float: right;
+	width: 50%;
+	text-align: right;
+	padding-right: 18px;
+	color: #b3b3b3;
+}
+.stokedinvoices .contact {
+	width: 47%;
+	float: left;
+}
+.stokedinvoices .contact strong {
+	display: block;
+	font-size: 21px;
+	color: #b3b3b3;
+}
+.stokedinvoices .contact p {
+	padding-top: 22px;
+	font-size: 13px;
+	color: #464646;
+	font-weight: bold;
+}
+.stokedinvoices .contact.to {
+	padding-left: 18px;
+}
+.stokedinvoices .contact.from {
+	padding-right: 18px;
+}
+.stokedinvoices .contact p span { font-weight: normal; }
+.stokedinvoices h3 {
+	font-size: 21px;
+	font-weight: bold;
+	color: #b3b3b3;
+	padding: 13px 0 0 18px;
+}
+.stokedinvoices .inv-line-item-header {
+	background-color: #cecece;
+	padding: 6px 13px;
+	margin: 0 18px;
+	color: #464646;
+	font-size: 13px;
+	font-weight: bold;
+}
+.stokedinvoices ul.inv-line-item {
+	margin: 0 18px;
+	padding: 0;
+	list-style: none;
+}
+.stokedinvoices ul.inv-line-item ul {
+	margin: 9px 0 9px 18px;
+	list-style: square;
+}
+.stokedinvoices ul.inv-line-item li {
+	padding: 9px 13px;
+	border-bottom: 1px dashed #cecece;
+	margin: 0;
+	font-size: 13px;
+}
+.stokedinvoices ul.inv-line-item li li {
+	padding: 0;
+	border: 0;
+	font-size: 13px;
+}
+.stokedinvoices .desc, .stokedinvoices .rate, .stokedinvoices .qty, .stokedinvoices .sub {
+	float: left;
+}
+.stokedinvoices .desc {
+	width: 65%;
+}
+.stokedinvoices .desc strong {
+	font-weight: normal;
+	display: block;
+}
+.stokedinvoices .desc div {
+	font-size: 13px;
+	padding-left: 13px;
+}
+.stokedinvoices .rate, .stokedinvoices .qty {
+	width: 10%;
+	text-align: center;
+}
+.stokedinvoices .sub {
+	width: 15%;
+	text-align: right;
+}
+.stokedinvoices ul.inv-totals {
+	margin: 18px 18px 33px 0;
+	padding: 0;
+}
+.stokedinvoices ul.inv-totals li {
+	text-align: right;
+	list-style: none;
+	font-size: 13px;
+	width: 50%;
+	float: right;
+}
+.stokedinvoices ul.inv-totals li.grand-total {
+	border-top: 1px solid #cecece;
+	padding-top: 9px;
+	margin-top: 9px;
+}
+.stokedinvoices ul.inv-totals .left {
+	display: block;
+	width: 70%;
+	float: left;
+	text-align: right;
+}
+.stokedinvoices ul.inv-totals .right {
+	display: block;
+}
+.stokedinvoices .inv-terms {
+	clear: both;
+}
+.stokedinvoices .inv-terms h3 {
+	background: #cecece;
+	padding: 6px 13px;
+	font-size: 13px;
+	color: #464646;
+	margin-bottom: 13px;
+}
+.stokedinvoices .inv-terms div {
+	padding: 0 18px;
+}
+.stokedinvoices .inv-terms .payment-icons {
+	width: 99px;
+	height: 110px;
+	background: url(../images/payment-icons.png) no-repeat;
+	float: right;
+	margin-right: 46px;
+}
+.stokedinvoices .inv-terms .payment-icons span {
+	text-indent: -1000em;
+	display: block;
+}
+.stokedinvoices .inv-terms p {
+	padding-left: 46px;
+	width: 65%;
+}
+.stokedinvoices .actions {
+	text-align: right;
+	padding: 0 18px 33px 0;
+}
+
+
+/* Buttons */
+
+a.button-action, a.button-action:visited {
+	border: 0;
+	display: inline-block;
+	font-size: 13px;
+	padding: 6px 13px;
+	margin-right: 9px;
+	color: #f9f9f9;
+	text-decoration: none;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+	-moz-box-shadow: 0 1px 3px rgba(0,0,0,0.6);
+	-webkit-box-shadow: 0 1px 3px rgba(0,0,0,0.6);
+	text-shadow: 0 -1px 1px rgba(0,0,0,0.25);
+	border-bottom: 1px solid rgba(0,0,0,0.25);
+	position: relative;
+	cursor: pointer;
+}
+a.button-action.green {
+	background: #7aa35a;
+}
+a.button-action.blue {
+	background: #58ade1;
+}
+a.button-action:hover {
+	background-color: #b3b3b3;
+	-moz-box-shadow: 0 0px 3px rgba(0,0,0,0.6);
+	-webkit-box-shadow: 0 0px 3px rgba(0,0,0,0.6);
+	text-shadow: 0 -1px 1px rgba(0,0,0,0.25);
+	border-bottom: 1px solid rgba(0,0,0,0.25);
+	text-decoration: none;
+	color: #464646;
+}
+
+
+/* clearfix */
+.clearfix:after {
+	content: ".";
+	display: block;
+	clear: both;
+	visibility: hidden;
+	line-height: 0;
+	height: 0;
+}
+html[xmlns] .clearfix { display: block; }
+* html .clearfix { height: 1%; }
