@@ -2,7 +2,7 @@
 <% require javascript(https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js) %>
 
 <script type="text/javascript">
-	Stripe.setPublishableKey('pk_NpK6TueoIAMz3yZXy4mBkeppHI6N6');
+	Stripe.setPublishableKey('YOUR_API_KEY_HERE');
 	
 	function stripeResponseHandler(status, response) {
     	if (response.error) {
