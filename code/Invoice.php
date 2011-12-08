@@ -56,25 +56,29 @@ class Invoice extends DataObject {
 	
 	public function getCMSFields() {
 		
-		$f = new FieldSet();
+		$f = parent::getCMSFields();
 		
-		if($this->ID) $f->push(new ReadonlyField('InvID', 'Invoice #'));
+		$f->removeFieldFromTab('Root.Main','InvPassword');
+		$f->removeFieldFromTab('Root.Main','InvID');
+		$f->removeFieldFromTab('Root.Main','InvPaid');
 		
-		$f->push(new TextField('RecipientName', 'Recipient Name'));
-		$f->push(new TextField('RecipientContact', 'Main Contact'));
-		$f->push(new TextField('RecipientEmail', 'Contact E-mail Address'));
-		$f->push(new TextField('RecipientAddr1', 'Address 1'));
-		$f->push(new TextField('RecipientAddr2', 'Address 2'));
-		$f->push(new TextField('RecipientCity', 'City'));
-		$f->push(new TextField('RecipientState', 'State/Province'));
-		$f->push(new DropdownField('RecipientCountry', 'Country', Geoip::getCountryDropDown(), Geoip::visitor_country()));
-		$f->push(new TextField('RecipientPostal', 'Zip or Postal Code'));
+		if($this->ID) $f->addFieldToTab('Root.Main', new ReadonlyField('InvID', 'Invoice #'));
+		
+		if($this->ID) $f->addFieldToTab('Root.Main', new CheckboxField('InvPaid', 'Invoice paid'));
 		
 		$df = new DateField('DueDate', 'Due Date');
 		$df->setConfig('showcalendar', true);
-		$f->push($df);
+		$f->addFieldToTab('Root.Main', $df);
 		
-		$f->push(new LiteralField('spacer', '<br><br>'));
+		$f->addFieldToTab('Root.Main', new TextField('RecipientName', 'Recipient Name'));
+		$f->addFieldToTab('Root.Main', new TextField('RecipientContact', 'Main Contact'));
+		$f->addFieldToTab('Root.Main', new TextField('RecipientEmail', 'Contact E-mail Address'));
+		$f->addFieldToTab('Root.Main', new TextField('RecipientAddr1', 'Address 1'));
+		$f->addFieldToTab('Root.Main', new TextField('RecipientAddr2', 'Address 2'));
+		$f->addFieldToTab('Root.Main', new TextField('RecipientCity', 'City'));
+		$f->addFieldToTab('Root.Main', new TextField('RecipientState', 'State/Province'));
+		$f->addFieldToTab('Root.Main', new DropdownField('RecipientCountry', 'Country', Geoip::getCountryDropDown(), Geoip::visitor_country()));
+		$f->addFieldToTab('Root.Main', new TextField('RecipientPostal', 'Zip or Postal Code'));
 		
 		if($this->ID) {
 		
@@ -98,11 +102,11 @@ class Invoice extends DataObject {
 			$tf = new LiteralField('note', '<p>You will be able to add line items after you save the invoice.</p>');
 		
 		}
-		$f->push($tf);
+		$f->addFieldToTab('Root.LineItems', $tf);
 		
 		if($this->ID) {
-			$f->push(new LiteralField('total', '<span style="font-size:16px;"><strong style="font-size:16px;">Total:</strong> ' . $this->getSubtotal() . '</span>'));
-			$f->push(new LiteralField('link', '<p><a href="' . $this->Link() . '" target="_blank">Click here to view invoice on site</a>.</p>'));
+			$f->addFieldToTab('Root.LineItems', new LiteralField('total', '<span style="font-size:16px;"><strong style="font-size:16px;">Total:</strong> ' . $this->getSubtotal() . '</span>'));
+			$f->addFieldToTab('Root.Main', new LiteralField('link', '<p><a href="' . $this->Link() . '" target="_blank">Click here to view invoice on site</a>.</p>'));
 		}
 		
 		return $f;

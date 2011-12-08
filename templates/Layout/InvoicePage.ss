@@ -4,24 +4,29 @@
 	<h1>$Title</h1>
 	
 	<% if Invoices %>
-	<ul class="invoice-list">
+	<p>Sort by: <a href="{$BaseHref}{$URLSegment}/sort/paid">Paid</a> |
+	<a href="{$BaseHref}{$URLSegment}/sort/unpaid">Unpaid</a> |
+	<a href="{$BaseHref}{$URLSegment}/sort/recipient-desc">Recipient Name DESC</a> |
+	<a href="{$BaseHref}{$URLSegment}/sort/recipient-asc">Recipient Name ASC</a></p>
+	
+	<table class="invoice-list">
 		<% control Invoices %>
-		<li>
-			<span class="status">
-				<% if InvPaid = false %>
+		<tr>
+			<td class="status">
+				<% if InvPaid = 0 %>
 					<span class="unpaid">Unpaid</span>
 				<% else %>
 					<span class="paid">Paid</span>
 				<% end_if %>
-			</span>
-			<span class="id">$InvID</span>
-			<span class="recipient">$RecipientName</span>
-			<span class="actions">
-				<a href="$Link">View Invoice</a><% if InvPaid = false %> | 
+			</td>
+			<td class="id">$InvID</td>
+			<td class="recipient">$RecipientName</td>
+			<td class="actions">
+				<a href="$Link">View Invoice</a><% if InvPaid = 0 %> | 
 				<a href="$PayLink">Pay Invoice</a><% end_if %>
-			</span>
-		</li>
+			</td>
+		</tr>
 		<% end_control %>
-	</ul>
+	</table>
 	<% end_if %>
 </div>

@@ -91,7 +91,8 @@ class InvoicePage_Controller extends Page_Controller {
 	public static $allowed_actions = array (
 		'view',
 		'pay',
-		'index'
+		'index',
+		'sort'
 	);
 
 	public function init() {
@@ -137,6 +138,40 @@ class InvoicePage_Controller extends Page_Controller {
 		
 	}
 	
+	public function sort() {
+		
+		$param = Director::URLParam('ID');
+		$sort = 'Created DESC';
+
+		if($param) {
+			switch($param) {
+				case 'paid':
+					$sort = 'InvPaid DESC';
+					break;
+					
+				case 'unpaid':
+					$sort = 'InvPaid ASC';
+					break;
+				
+				case 'recipient-desc':
+					$sort = 'RecipientName DESC';
+					break;
+					
+				case 'recipient-asc':
+					$sort = 'RecipientName ASC';
+					break;
+			}
+		}
+		
+		$invs = DataObject::get('Invoice', '', $sort);
+		
+		return $this->customise(array(
+			'Invoices' => $invs,
+			'Title' => 'Listing Invoices: ' . ucwords($param)
+		))->renderWith(array('InvoicePage','Page'));
+		
+	}
+	
 	public function processPayment() {
 		
 		Stripe_Charge::create(array(
@@ -150,9 +185,9 @@ class InvoicePage_Controller extends Page_Controller {
 	
 	private function getInvoice() {
 	
-		$params = $this->getURLParams();
+		$param = Director::URLParam('ID');
 		
-		return DataObject::get_one("Invoice", "InvID = '". Convert::raw2sql($params['ID']) ."'");
+		return DataObject::get_one("Invoice", "InvID = '". Convert::raw2sql($param) ."'");
 		
 	}	
 	

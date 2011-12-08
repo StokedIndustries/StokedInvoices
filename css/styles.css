@@ -5,6 +5,9 @@
  */
  
 
+
+/* Invoice View Page */
+
 .stokedinvoices .inv-header {
 	padding: 0 0 13px 0;
 	margin-bottom: 13px;
@@ -153,9 +156,75 @@
 	padding-left: 46px;
 	width: 65%;
 }
-.stokedinvoices .actions {
+#InvoiceView .actions {
 	text-align: right;
 	padding: 0 18px 33px 0;
+}
+
+
+/* Invoice Payment Page */
+
+
+
+/* Invoice Listing */
+
+.stokedinvoices .invoice-list {
+	width: 100%;
+}
+.stokedinvoices .invoice-list tr {
+	padding: 13px 0px;
+}
+.stokedinvoices .invoice-list tr:hover {
+	background: #f9f9f9;
+}
+.stokedinvoices .invoice-list td {
+	border: 0;
+	border-bottom: 1px solid #cecece;
+	padding: 13px 0;
+}
+.stokedinvoices .invoice-list .status {
+	width: 13%;
+	text-align: center;
+}
+.stokedinvoices .invoice-list .status span {
+	padding: 3px 9px;
+	text-align: center;
+	font-size: 16px;
+	text-transform: lowercase;
+	color: #f9f9f9;
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
+	border-radius: 10px;
+}
+.stokedinvoices .invoice-list .status .paid {
+	background: #c9de96; /* Old browsers */
+	background: -moz-linear-gradient(top, #c9de96 0%, #8ab66b 44%, #398235 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#c9de96), color-stop(44%,#8ab66b), color-stop(100%,#398235)); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top, #c9de96 0%,#8ab66b 44%,#398235 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top, #c9de96 0%,#8ab66b 44%,#398235 100%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(top, #c9de96 0%,#8ab66b 44%,#398235 100%); /* IE10+ */
+	background: linear-gradient(top, #c9de96 0%,#8ab66b 44%,#398235 100%); /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#c9de96', endColorstr='#398235',GradientType=0 ); /* IE6-9 */
+}
+.stokedinvoices .invoice-list .status .unpaid {
+	background: #ff3019; /* Old browsers */
+	background: -moz-linear-gradient(top,  #ff3019 0%, #cf0404 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#ff3019), color-stop(100%,#cf0404)); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top,  #ff3019 0%,#cf0404 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top,  #ff3019 0%,#cf0404 100%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(top,  #ff3019 0%,#cf0404 100%); /* IE10+ */
+	background: linear-gradient(top,  #ff3019 0%,#cf0404 100%); /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ff3019', endColorstr='#cf0404',GradientType=0 ); /* IE6-9 */
+}
+.stokedinvoices .invoice-list .id {
+	width: 20%;
+	font-weight: bold;
+}
+.stokedinvoices .invoice-list .recipient {
+	
+}
+.stokedinvoices .invoice-list .actions {
+	width: 20%;
 }
 
 
@@ -196,13 +265,12 @@ a.button-action:hover {
 
 
 /* clearfix */
+.clearfix:before,
 .clearfix:after {
-	content: ".";
-	display: block;
-	clear: both;
-	visibility: hidden;
-	line-height: 0;
-	height: 0;
+  content: ".";    
+  display: block;    
+  height: 0;    
+  overflow: hidden;	
 }
-html[xmlns] .clearfix { display: block; }
-* html .clearfix { height: 1%; }
+.clearfix:after {clear: both;}
+.clearfix {zoom: 1;} /* IE < 8 */

@@ -1,3 +1,4 @@
+<% require css(stokedinvoices/css/styles.css) %>
 <% require javascript(https://js.stripe.com/v1/) %>
 <% require javascript(https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js) %>
 
@@ -39,8 +40,6 @@
   		});
 	});
 </script>
-
-<% require css(stokedinvoices/css/styles.css) %>
 
 <div id="InvoiceView" class="typography stokedinvoices">
 	<h1>$Title</h1>
