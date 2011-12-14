@@ -21,7 +21,10 @@ class Invoice extends DataObject {
 		'RecipientPostal' => 'Varchar(10)',
 		'RecipientCountry' => 'Varchar(255)',
 		'RecipientContact' => 'Varchar(255)',
-		'RecipientEmail' => 'Varchar(255)'
+		'RecipientEmail' => 'Varchar(255)',
+		'PaymentType' => 'Varchar(25)',
+		'PaymentLastFour' => 'Varchar(4)',
+		'PaymentToken' => 'Varchar(255)'
 	);
 	
 	static $has_one = array(
@@ -62,9 +65,10 @@ class Invoice extends DataObject {
 		$f->removeFieldFromTab('Root.Main','InvID');
 		$f->removeFieldFromTab('Root.Main','InvPaid');
 		
-		if($this->ID) $f->addFieldToTab('Root.Main', new ReadonlyField('InvID', 'Invoice #'));
-		
-		if($this->ID) $f->addFieldToTab('Root.Main', new CheckboxField('InvPaid', 'Invoice paid'));
+		if($this->ID) {
+			$f->addFieldToTab('Root.Main', new LiteralField('link', '<p><a href="' . $this->Link() . '" target="_blank">Click here to view invoice on site</a>.</p>'));
+			$f->addFieldToTab('Root.Main', new ReadonlyField('InvID', 'Invoice #'));
+		}
 		
 		$df = new DateField('DueDate', 'Due Date');
 		$df->setConfig('showcalendar', true);
@@ -106,21 +110,27 @@ class Invoice extends DataObject {
 		
 		if($this->ID) {
 			$f->addFieldToTab('Root.LineItems', new LiteralField('total', '<span style="font-size:16px;"><strong style="font-size:16px;">Total:</strong> ' . $this->getSubtotal() . '</span>'));
-			$f->addFieldToTab('Root.Main', new LiteralField('link', '<p><a href="' . $this->Link() . '" target="_blank">Click here to view invoice on site</a>.</p>'));
 		}
+		
+		if($this->ID) $f->addFieldToTab('Root.Payment', new CheckboxField('InvPaid', 'Invoice paid'));
+		$f->addFieldToTab('Root.Payment', new ReadonlyField('PaymentType', 'Card Type'));
+		$f->addFieldToTab('Root.Payment', new ReadonlyField('PaymentLastFour', 'Last 4 Digits'));
+		$f->addFieldToTab('Root.Payment', new ReadonlyField('PaymentToken', 'Payment Token'));
 		
 		return $f;
 	}
 	
-	function onBeforeWrite() {
-		parent::onBeforeWrite();
+	function onAfterWrite() {
 		
 		if(!$this->InvID) {
 			$unique = substr($this->RecipientName, 0, 3);
 			$unique = strtoupper($unique);
 			$this->InvID = $unique . '-' . rand(1000000,9999999);
+			$this->write();
 			//$this->InvID = rand(1000000,9999999);
 		}
+		
+		parent::onAfterWrite();
 	}
 	
 	private function addUpLineItems() {

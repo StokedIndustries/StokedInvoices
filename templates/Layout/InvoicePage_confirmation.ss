@@ -3,7 +3,14 @@
 <div id="InvoiceView" class="typography stokedinvoices">
 	<h1>$Title</h1>
 	
+	<p>&larr; <a href="invoices/">Return to invoices</a></p>
+	
+	<p>Thank you for your payment of $Invoice.GrandTotal. If you'd like, you can print this page as your receipt.</p>
+	
+	<a href="$Invoice.Link" class="button-action blue" title="Print this invoice" onclick="window.print(); return false;">Print Invoice</a><br><br>
+	
 	<div class="inv-header">
+		<span class="status">Paid</span>
 		<span class="ref">$Invoice.InvID</span>
 		<span class="date">$Invoice.Created.Long</span>
 	</div>
@@ -76,14 +83,4 @@
 		</li>
 	</ul>
 	
-	<div class="actions">
-		<% control Invoice %><% if InvPaid = 0 %><a href="$PayLink" class="button-action green" title="Pay this invoice online">Pay Invoice Online</a><% end_if %><% end_control %>
-		<a href="$Invoice.Link" class="button-action blue" title="Print this invoice" onclick="window.print(); return false;">Print Invoice</a>
-	</div>
-			
-	<div class="inv-terms">
-		<h3>Payment Terms</h3>
-		<!--<div class="payment-icons"><span>Gold Coin, Visa, MasterCard, American Express, PayPal</span></div>-->
-		<div>$InvoicePaymentTerms</div>
-	</div>
 </div>

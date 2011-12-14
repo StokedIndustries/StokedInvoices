@@ -25,6 +25,17 @@
 	padding-right: 18px;
 	color: #b3b3b3;
 }
+.stokedinvoices .inv-header .status {
+	display: block;
+	padding: 13px;
+	margin: 13px;
+	text-align: center;
+	background: green;
+	color: #fff;
+	font-size: 18px;
+	font-weight: bold;
+	text-transform: uppercase;
+}
 .stokedinvoices .contact {
 	width: 47%;
 	float: left;
@@ -164,7 +175,28 @@
 
 /* Invoice Payment Page */
 
-
+.stokedinvoices #CVC {
+	width: 18%;
+}
+.stokedinvoices #CardExpiryMonth {
+	width: 18%;
+	float: left;
+}
+.stokedinvoices #CardExpiryYear {
+	width: 21%;
+	float: left;
+	margin-left: -35px;
+}
+.stokedinvoices #CardExpiryMonth .middleColumn, .stokedinvoices #CardExpiryYear .middleColumn {
+	width: 75px;
+}
+.stokedinvoices #CVC .middleColumn {
+	width: 56px;
+}
+.stokedinvoices #CardExpiryMonth input, .stokedinvoices #CardExpiryYear input {
+	width: 69px;
+}
+.stokedinvoices #CVC input { width: 50px; }
 
 /* Invoice Listing */
 
@@ -195,6 +227,8 @@
 	-webkit-border-radius: 10px;
 	-moz-border-radius: 10px;
 	border-radius: 10px;
+	width: 60%;
+	display: block;
 }
 .stokedinvoices .invoice-list .status .paid {
 	background: #c9de96; /* Old browsers */

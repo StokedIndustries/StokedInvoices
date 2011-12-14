@@ -9,7 +9,7 @@
 // Stripe Payment Processing Library
 chdir(dirname(__FILE__));
 require_once('../thirdparty/stripe/lib/Stripe.php');
-Stripe::setApiKey('pk_NpK6TueoIAMz3yZXy4mBkeppHI6N6'); 
+Stripe::setApiKey('YOUR_PRIVATE_API_KEY_HERE');
 
 class InvoicePage extends Page {
 
@@ -92,7 +92,10 @@ class InvoicePage_Controller extends Page_Controller {
 		'view',
 		'pay',
 		'index',
-		'sort'
+		'sort',
+		'ccpayment',
+		'CreditCardForm',
+		'thanks'
 	);
 
 	public function init() {
@@ -133,8 +136,51 @@ class InvoicePage_Controller extends Page_Controller {
 		
 		return $this->customise(array(
 			'Title' => 'Make a Payment',
-			'Invoice' => $inv
+			'Invoice' => $inv,
+			'Form' => $this->CreditCardForm($inv->InvID)
 		))->renderWith(array('InvoicePage_pay','Page'));
+		
+	}
+	
+	public function CreditCardForm($inv_id) {
+	
+		$cvc = new TextField('CVC');
+		//$cvc->addExtraClass('CardCVC');
+		
+		$cem = new TextField('CardExpiryMonth', 'Expiry Date');
+		//$cem->addExtraClass('CardExpiryMonth');
+		
+		$cey = new TextField('CardExpiryYear', '(mm/yyyy format)');
+		//$cey->addExtraClass('CardExpiryYear');
+		
+		$pf = new FieldSet(
+			new TextField('CardNumber', 'Card Number'),
+			$cvc,
+			$cem,
+			$cey,
+			new HiddenField('StripeToken'),
+			new HiddenField('InvID', 'InvID', $inv_id)
+		);
+		
+		$pa = new FieldSet(
+			new FormAction('ccpayment', 'Submit Payment')
+		);
+		
+		return new Form($this, 'CreditCardForm', $pf, $pa);
+		
+	}
+	
+	public function ccpayment($data, $form) {
+		
+		//$inv = DataObject::get_one("Invoice", "InvID = '" . $data['InvID'] . "'");
+		$inv = $this->getInvoice($data['InvID']);
+		
+		$inv->InvPaid = true;
+		$inv->PaymentToken = $data['StripeToken'];
+		
+		$inv->write();
+		
+		Director::redirect($this->Link('thanks/' . $inv->InvID));
 		
 	}
 	
@@ -172,20 +218,35 @@ class InvoicePage_Controller extends Page_Controller {
 		
 	}
 	
-	public function processPayment() {
+	public function thanks() {
+		
+		Requirements::css('stokedinvoices/css/print-invoice.css','print');
+		
+		$inv = $this->getInvoice();
+		
+		$this->processPayment($inv);
+		
+		return $this->customise(array(
+			'Title' => 'Payment Confirmation',
+			'Invoice' => $inv
+		))->renderWith(array('InvoicePage_confirmation','Page'));
+		
+	}
+	
+	private function processPayment($inv) {
 		
 		Stripe_Charge::create(array(
-			"amount" => $_POST['charge-amt'],
+			"amount" => $inv->GrandTotalInCents,
 			"currency" => "usd",
-			"card" => $_POST['stripeToken'], // obtained with stripe.js
-			"description" => "Invoice payment to Stoked Industries"
+			"card" => $inv->PaymentToken, // obtained with stripe.js
+			"description" => "Payment for Stoked Industries Invoice " . $inv->InvID
 		));
 		
 	}
 	
-	private function getInvoice() {
-	
-		$param = Director::URLParam('ID');
+	private function getInvoice($id = null) {
+		
+		$param = ($id) ? $id : Director::URLParam('ID');
 		
 		return DataObject::get_one("Invoice", "InvID = '". Convert::raw2sql($param) ."'");
 		
