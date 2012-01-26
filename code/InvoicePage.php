@@ -4,12 +4,6 @@
  * 
  * 	@package stokedinvoices
  */
- 
- 
-// Stripe Payment Processing Library
-chdir(dirname(__FILE__));
-require_once('../thirdparty/stripe/lib/Stripe.php');
-Stripe::setApiKey('YOUR_PRIVATE_API_KEY_HERE');
 
 class InvoicePage extends Page {
 
@@ -25,7 +19,11 @@ class InvoicePage extends Page {
 		'InvoicePaymentTerms' => 'Text',
 		'InvoiceTaxRate' => 'Varchar(15)',
 		'InvoiceTaxLabel' => 'Varchar(255)',
-		"InvoiceCurrency" => "Enum('USD,EUR,JPY,GBP,CHF,AUS,CAD,SEK,HKD,NOK,NZD,MXN,SGD,BRL,CNY,CZK,DKK,HUF,ILS,INR,MYR,PHP,PLN,THB,TWD')"
+		"InvoiceCurrency" => "Enum('USD,EUR,JPY,GBP,CHF,AUS,CAD,SEK,HKD,NOK,NZD,MXN,SGD,BRL,CNY,CZK,DKK,HUF,ILS,INR,MYR,PHP,PLN,THB,TWD')",
+		'PublicPaymentAPIKey' => 'Varchar(255)',
+		'PrivatePaymentAPIKey' => 'Varchar(255)',
+		'EnableOnlinePayments' => 'Boolean',
+		'EnableTax' => 'Boolean'
 	);
 
 	static $has_one = array(
@@ -75,13 +73,60 @@ class InvoicePage extends Page {
 		$f->addFieldToTab('Root.Content.ContactInfo', new DropdownField('InvoiceCompanyCountry','Country', Geoip::getCountryDropDown(), Geoip::visitor_country()));
 		$f->addFieldToTab('Root.Content.ContactInfo', new TextField('InvoiceCompanyPostal', 'Zip or Postal Code'));
 		
+		$f->addFieldToTab('Root.Content.PaymentOptions', new CheckboxField('EnableOnlinePayments', 'Enable online payments with Stripe'));
+		$f->addFieldToTab('Root.Content.PaymentOptions', new LiteralField('warn', '<p>Caution: Stripe only accepts USD currency at the moment.</p>'));
+		$f->addFieldToTab('Root.Content.PaymentOptions', new TextField('PublicPaymentAPIKey', 'Stripe Public API Key'));
+		$f->addFieldToTab('Root.Content.PaymentOptions', new TextField('PrivatePaymentAPIKey', 'Stripe Private API Key'));
+		
+		$f->addFieldToTab('Root.Content.PaymentOptions', new LiteralField('break', '<br><br><br>'));
+		
 		$f->addFieldToTab('Root.Content.PaymentOptions', new TextareaField('InvoicePaymentTerms', 'Payment Terms'));
+		
+		$f->addFieldToTab('Root.Content.PaymentOptions', new LiteralField('break', '<br><br><br>'));
+		
+		$f->addFieldToTab('Root.Content.PaymentOptions', new CheckboxField('EnableTax', 'Collect tax on invoices?'));
 		$f->addFieldToTab('Root.Content.PaymentOptions', new TextField('InvoiceTaxRate', 'Tax Rate (decimal number representing a percentage)'));
 		$f->addFieldToTab('Root.Content.PaymentOptions', new TextField('InvoiceTaxLabel', 'Tax Label'));
 		$f->addFieldToTab('Root.Content.PaymentOptions', new DropdownField('InvoiceCurrency', 'Currency', $this->dbObject('InvoiceCurrency')->enumValues()));
 
 		return $f;
 		
+	}
+	
+	public function getCurrencySymbol() {
+	
+		$currency_select = array('USD' => array('title' => 'U.S. Dollar', 'code' => 'USD', 'symbol_left' => '$', 'symbol_right' => '', 'decimal_point' => '.', 'thousands_point' => ',', 'decimal_places' => '2'),
+							'EUR' => array('title' => 'Euro', 'code' => 'EUR', 'symbol_left' => '€', 'symbol_right' => '', 'decimal_point' => '.', 'thousands_point' => ',', 'decimal_places' => '2'),
+                            'JPY' => array('title' => 'Japanese Yen', 'code' => 'JPY', 'symbol_left' => '¥', 'symbol_right' => '', 'decimal_point' => '.', 'thousands_point' => ',', 'decimal_places' => '2'),
+                            'GBP' => array('title' => 'Pounds Sterling', 'code' => 'GBP', 'symbol_left' => '£', 'symbol_right' => '', 'decimal_point' => '.', 'thousands_point' => ',', 'decimal_places' => '2'),
+                            'CHF' => array('title' => 'Swiss Franc', 'code' => 'CHF', 'symbol_left' => '', 'symbol_right' => 'CHF', 'decimal_point' => ',', 'thousands_point' => '.', 'decimal_places' => '2'),
+                            'AUS' => array('title' => 'Australian Dollar', 'code' => 'AUS', 'symbol_left' => '$', 'symbol_right' => '', 'decimal_point' => '.', 'thousands_point' => ',', 'decimal_places' => '2'),
+                            'CAD' => array('title' => 'Canadian Dollar', 'code' => 'CAD', 'symbol_left' => '$', 'symbol_right' => '', 'decimal_point' => '.', 'thousands_point' => ',', 'decimal_places' => '2'),
+                            'SEK' => array('title' => 'Swedish Krona', 'code' => 'SEK', 'symbol_left' => '', 'symbol_right' => 'kr', 'decimal_point' => ',', 'thousands_point' => '.', 'decimal_places' => '2'),
+                            'HKD' => array('title' => 'Hong Kong Dollar', 'code' => 'HKD', 'symbol_left' => '$', 'symbol_right' => '', 'decimal_point' => '.', 'thousands_point' => ',', 'decimal_places' => '2'),
+                            'NOK' => array('title' => 'Norwegian Krone', 'code' => 'NOK', 'symbol_left' => 'kr', 'symbol_right' => '', 'decimal_point' => ',', 'thousands_point' => '.', 'decimal_places' => '2'),
+                            'NZD' => array('title' => 'New Zealand Dollar', 'code' => 'NZD', 'symbol_left' => '$', 'symbol_right' => '', 'decimal_point' => '.', 'thousands_point' => ',', 'decimal_places' => '2'),
+                            'MXN' => array('title' => 'Mexican Peso', 'code' => 'MXN', 'symbol_left' => '$', 'symbol_right' => '', 'decimal_point' => '.', 'thousands_point' => ',', 'decimal_places' => '2'),
+                            'SGD' => array('title' => 'Singapore Dollar', 'code' => 'SGD', 'symbol_left' => '$', 'symbol_right' => '', 'decimal_point' => '.', 'thousands_point' => ',', 'decimal_places' => '2'),
+                            'BRL' => array('title' => 'Brazilian Real', 'code' => 'BRL', 'symbol_left' => 'R$', 'symbol_right' => '', 'decimal_point' => ',', 'thousands_point' => '.', 'decimal_places' => '2'),
+                            'CNY' => array('title' => 'Chinese RMB', 'code' => 'CNY', 'symbol_left' => '￥', 'symbol_right' => '', 'decimal_point' => '.', 'thousands_point' => ',', 'decimal_places' => '2'),
+                            'CZK' => array('title' => 'Czech Koruna', 'code' => 'CZK', 'symbol_left' => '', 'symbol_right' => 'Kč', 'decimal_point' => ',', 'thousands_point' => '.', 'decimal_places' => '2'),
+                            'DKK' => array('title' => 'Danish Krone', 'code' => 'DKK', 'symbol_left' => '', 'symbol_right' => 'kr', 'decimal_point' => ',', 'thousands_point' => '.', 'decimal_places' => '2'),
+                            'HUF' => array('title' => 'Hungarian Forint', 'code' => 'HUF', 'symbol_left' => '', 'symbol_right' => 'Ft', 'decimal_point' => '.', 'thousands_point' => ',', 'decimal_places' => '2'),
+                            'ILS' => array('title' => 'Israeli New Shekel', 'code' => 'ILS', 'symbol_left' => '₪', 'symbol_right' => '', 'decimal_point' => '.', 'thousands_point' => ',', 'decimal_places' => '2'),
+                            'INR' => array('title' => 'Indian Rupee', 'code' => 'INR', 'symbol_left' => 'Rs.', 'symbol_right' => '', 'decimal_point' => '.', 'thousands_point' => ',', 'decimal_places' => '2'),
+                            'MYR' => array('title' => 'Malaysian Ringgit', 'code' => 'MYR', 'symbol_left' => 'RM', 'symbol_right' => '', 'decimal_point' => '.', 'thousands_point' => ',', 'decimal_places' => '2'),
+                            'PHP' => array('title' => 'Philippine Peso', 'code' => 'PHP', 'symbol_left' => 'Php', 'symbol_right' => '', 'decimal_point' => '.', 'thousands_point' => ',', 'decimal_places' => '2'),
+                            'PLN' => array('title' => 'Polish Zloty', 'code' => 'PLN', 'symbol_left' => '', 'symbol_right' => 'zł', 'decimal_point' => ',', 'thousands_point' => '.', 'decimal_places' => '2'),
+                            'THB' => array('title' => 'Thai Baht', 'code' => 'THB', 'symbol_left' => '', 'symbol_right' => '฿', 'decimal_point' => '.', 'thousands_point' => ',', 'decimal_places' => '2'),
+                            'TWD' => array('title' => 'Taiwan New Dollar', 'code' => 'TWD', 'symbol_left' => 'NT$', 'symbol_right' => '', 'decimal_point' => '.', 'thousands_point' => ',', 'decimal_places' => '2'));
+                            
+    	if($currency_select[$this->InvoiceCurrency]['symbol_left']) {
+    		return array('pos' => 'left', 'symbol' => $currency_select[$this->InvoiceCurrency]['symbol_left']);
+    	} else {
+    		return array('pos' => 'right', 'symbol' => $currency_select[$this->InvoiceCurrency]['symbol_right']);
+    	}
+    	
 	}
 	
 }
@@ -116,8 +161,6 @@ class InvoicePage_Controller extends Page_Controller {
 	}
 	
 	public function view() {
-	
-		if(!Member::currentUserID()) Security::permissionFailure($this,"You must be logged in to view the invoice.");
 		
 		$inv = $this->getInvoice();
 		
@@ -134,6 +177,8 @@ class InvoicePage_Controller extends Page_Controller {
 	
 		$inv = $this->getInvoice();
 		
+		Requirements::customScript("Stripe.setPublishableKey('" . $this->PublicPaymentAPIKey . "');");
+		
 		return $this->customise(array(
 			'Title' => 'Make a Payment',
 			'Invoice' => $inv,
@@ -145,13 +190,8 @@ class InvoicePage_Controller extends Page_Controller {
 	public function CreditCardForm($inv_id) {
 	
 		$cvc = new TextField('CVC');
-		//$cvc->addExtraClass('CardCVC');
-		
 		$cem = new TextField('CardExpiryMonth', 'Expiry Date');
-		//$cem->addExtraClass('CardExpiryMonth');
-		
 		$cey = new TextField('CardExpiryYear', '(mm/yyyy format)');
-		//$cey->addExtraClass('CardExpiryYear');
 		
 		$pf = new FieldSet(
 			new TextField('CardNumber', 'Card Number'),
@@ -171,13 +211,10 @@ class InvoicePage_Controller extends Page_Controller {
 	}
 	
 	public function ccpayment($data, $form) {
-		
-		//$inv = DataObject::get_one("Invoice", "InvID = '" . $data['InvID'] . "'");
+	
 		$inv = $this->getInvoice($data['InvID']);
-		
 		$inv->InvPaid = true;
 		$inv->PaymentToken = $data['StripeToken'];
-		
 		$inv->write();
 		
 		Director::redirect($this->Link('thanks/' . $inv->InvID));
@@ -234,12 +271,16 @@ class InvoicePage_Controller extends Page_Controller {
 	}
 	
 	private function processPayment($inv) {
+		// Stripe Payment Processing Library
+		chdir(dirname(__FILE__));
+		require('../thirdparty/stripe/lib/Stripe.php');
+		Stripe::setApiKey($this->PrivatePaymentAPIKey);
 		
 		Stripe_Charge::create(array(
 			"amount" => $inv->GrandTotalInCents,
 			"currency" => "usd",
 			"card" => $inv->PaymentToken, // obtained with stripe.js
-			"description" => "Payment for Stoked Industries Invoice " . $inv->InvID
+			"description" => "Payment for " . $this->InvoiceCompanyName  . " Invoice " . $inv->InvID
 		));
 		
 	}

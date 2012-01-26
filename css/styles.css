@@ -96,7 +96,7 @@
 	float: left;
 }
 .stokedinvoices .desc {
-	width: 65%;
+	width: 55%;
 }
 .stokedinvoices .desc strong {
 	font-weight: normal;
@@ -107,7 +107,7 @@
 	padding-left: 13px;
 }
 .stokedinvoices .rate, .stokedinvoices .qty {
-	width: 10%;
+	width: 15%;
 	text-align: center;
 }
 .stokedinvoices .sub {
@@ -132,7 +132,7 @@
 }
 .stokedinvoices ul.inv-totals .left {
 	display: block;
-	width: 70%;
+	width: 62%;
 	float: left;
 	text-align: right;
 }
@@ -151,17 +151,6 @@
 }
 .stokedinvoices .inv-terms div {
 	padding: 0 18px;
-}
-.stokedinvoices .inv-terms .payment-icons {
-	width: 99px;
-	height: 110px;
-	background: url(../images/payment-icons.png) no-repeat;
-	float: right;
-	margin-right: 46px;
-}
-.stokedinvoices .inv-terms .payment-icons span {
-	text-indent: -1000em;
-	display: block;
 }
 .stokedinvoices .inv-terms p {
 	padding-left: 46px;
@@ -197,6 +186,17 @@
 	width: 69px;
 }
 .stokedinvoices #CVC input { width: 50px; }
+
+.stokedinvoices .payment-icons {
+	width: 162px;
+	height: 36px;
+	background: url(../images/payment-icons.png) no-repeat;
+}
+.stokedinvoices .payment-icons span {
+	text-indent: -1000em;
+	display: block;
+}
+
 
 /* Invoice Listing */
 

@@ -41,9 +41,9 @@
 				<strong>$Label</strong>
 				<div>$Description</div>
 			</span>
-			<span class="rate">${$RateFormatted}</span>
+			<span class="rate">$RateFormatted</span>
 			<span class="qty">$Qty</span>
-			<span class="sub">${$Subtotal}</span>
+			<span class="sub">$SubtotalWithCurrency</span>
 		</li>
 		<% end_control %>
 	<% end_if %>
@@ -55,35 +55,42 @@
 				Subtotal:
 			</span>
 			<span class="right">
-				$Invoice.Subtotal
+				$Invoice.SubtotalWithCurrency
 			</span>
 		</li>
+		<% if EnableTax %>
 		<li>
 			<span class="left">
-				{$InvoiceTaxRate}% $InvoiceTaxLabel:
+				$InvoiceTaxLabel:
 			</span>
 			<span class="right">
-				$Invoice.TaxAmount
+				$Invoice.TaxAmountWithCurrency
 			</span>
 		</li>
+		<% end_if %>
 		<li class="grand-total">
 			<span class="left">
 				<strong>Total:</strong>
 			</span>
 			<span class="right">
-				$Invoice.GrandTotal
+				$Invoice.TotalWithCurrency
 			</span>
 		</li>
 	</ul>
 	
 	<div class="actions">
-		<% control Invoice %><% if InvPaid = 0 %><a href="$PayLink" class="button-action green" title="Pay this invoice online">Pay Invoice Online</a><% end_if %><% end_control %>
+		<% if EnableOnlinePayments %>
+			<% control Invoice %>
+			<% if InvPaid = 0 %>
+				<a href="$PayLink" class="button-action green" title="Pay this invoice online">Pay Invoice Online</a>
+			<% end_if %>
+			<% end_control %>
+		<% end_if %>
 		<a href="$Invoice.Link" class="button-action blue" title="Print this invoice" onclick="window.print(); return false;">Print Invoice</a>
 	</div>
 			
 	<div class="inv-terms">
 		<h3>Payment Terms</h3>
-		<!--<div class="payment-icons"><span>Gold Coin, Visa, MasterCard, American Express, PayPal</span></div>-->
 		<div>$InvoicePaymentTerms</div>
 	</div>
 </div>

@@ -67,7 +67,7 @@
 		</li>
 		<li>
 			<span class="left">
-				{$InvoiceTaxRate}% $InvoiceTaxLabel:
+				$InvoiceTaxLabel:
 			</span>
 			<span class="right">
 				$Invoice.TaxAmount

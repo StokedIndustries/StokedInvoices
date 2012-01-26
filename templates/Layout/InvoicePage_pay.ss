@@ -12,7 +12,9 @@
 	
 	<p>&larr; <a href="$Invoice.Link">Go back to the invoice</a></p>
 	
-	<p>Your card will be charged $Invoice.GrandTotal for invoice $Invoice.InvID.</p>
+	<p>Your card will be charged $Invoice.TotalWithCurrency for invoice $Invoice.InvID.</p>
+	
+	<div class="payment-icons"><span>We accept Visa, MasterCard and American Express</span></div>
 	
 	<p class="payment-errors"></p>
 	$Form  

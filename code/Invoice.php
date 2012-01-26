@@ -53,10 +53,6 @@ class Invoice extends DataObject {
 	static $defaults = array(
 	);
 	
-	static $currency = '$';//$this->InvoicePage()->InvoiceCurrency;
-	
-	static $tax_rate = '4.166';//$this->InvoicePage()->InvoiceTaxRate;
-	
 	public function getCMSFields() {
 		
 		$f = parent::getCMSFields();
@@ -83,6 +79,8 @@ class Invoice extends DataObject {
 		$f->addFieldToTab('Root.Main', new TextField('RecipientState', 'State/Province'));
 		$f->addFieldToTab('Root.Main', new DropdownField('RecipientCountry', 'Country', Geoip::getCountryDropDown(), Geoip::visitor_country()));
 		$f->addFieldToTab('Root.Main', new TextField('RecipientPostal', 'Zip or Postal Code'));
+		
+		$f->addFieldToTab('Root.LineItems', new LiteralField('note', '<p>Save the invoice after adding line items to update the total.</p>'));
 		
 		if($this->ID) {
 		
@@ -120,17 +118,19 @@ class Invoice extends DataObject {
 		return $f;
 	}
 	
-	function onAfterWrite() {
+	protected function onAfterWrite() {
+	
+		parent::onAfterWrite();
 		
+		// TODO: Need to fix this. Can't figure out why it isn't grabbing the recipient name.
+		// TODO: Also make it check for uniqueness.
 		if(!$this->InvID) {
 			$unique = substr($this->RecipientName, 0, 3);
 			$unique = strtoupper($unique);
 			$this->InvID = $unique . '-' . rand(1000000,9999999);
 			$this->write();
-			//$this->InvID = rand(1000000,9999999);
 		}
 		
-		parent::onAfterWrite();
 	}
 	
 	private function addUpLineItems() {
@@ -142,29 +142,59 @@ class Invoice extends DataObject {
 	}
 	
 	public function calculateTax($amt) {
-		return ($amt * self::$tax_rate)/100;
+		$inv_page = $this->getInvoicePage();
+		return ($amt * $inv_page->InvoiceTaxRate)/100;
 	}
 	
 	public function getSubtotal() {
 		$total = $this->addUpLineItems();
-		return self::$currency . number_format($total, 2);
+		return number_format($total, 2);
+	}
+	
+	public function getSubtotalWithCurrency() {
+		$inv_page = $this->getInvoicePage();
+		$total = $this->addUpLineItems();
+		$symbol = $inv_page->getCurrencySymbol();
+		if($symbol['pos'] == 'left') {
+			return $symbol['symbol'] . number_format($total, 2);
+		} else {
+			return number_format($total, 2) . ' ' . $symbol['symbol'];
+		}
 	}
 	
 	public function getTaxAmount() {
 		$total = $this->addUpLineItems();
 		$total = $this->calculateTax($total);
-		return self::$currency . number_format($total, 2);
+		return number_format($total, 2);
+	}
+	
+	public function getTaxAmountWithCurrency() {
+		$inv_page = $this->getInvoicePage();
+		$total = $this->addUpLineItems();
+		if($this->doChargeTax()) {
+			$total = $this->calculateTax($total);
+		}
+		$symbol = $inv_page->getCurrencySymbol();
+		if($symbol['pos'] == 'left') {
+			return $symbol['symbol'] . number_format($total, 2);
+		} else {
+			return number_format($total, 2) . ' ' . $symbol['symbol'];
+		}
 	}
 	
 	public function getGrandTotal() {
 		$total = $this->addUpLineItems();
-		$total += $this->calculateTax($total);
-		return self::$currency . number_format($total, 2);
+		if($this->doChargeTax()) {
+			$total += $this->calculateTax($total);
+		}
+		return number_format($total, 2);
 	}
 	
 	public function getGrandTotalInCents() {
 		$total = $this->addUpLineItems();
-		$total += $this->calculateTax($total);
+		if($this->doChargeTax()) {
+			$total += $this->calculateTax($total);
+		}
 		return round($total * 100);
 	}
 	
@@ -172,16 +202,40 @@ class Invoice extends DataObject {
 		return ($this->InvPaid) ? 'Yes' : 'No';
 	}
 	
+	public function doChargeTax() {
+		$inv_page = $this->getInvoicePage();
+		
+		return ($inv_page->EnableTax) ? true : false;
+	}
+	
 	public function Link() {
-		$inv_page = DataObject::get_one('InvoicePage');
+		$inv_page = $this->getInvoicePage();
 		
 		return Director::absoluteBaseURL() . $inv_page->URLSegment . '/view/' . $this->InvID;
 	}
 	
 	public function PayLink() {
-		$inv_page = DataObject::get_one('InvoicePage');
+		$inv_page = $this->getInvoicePage();
 		
 		return Director::absoluteBaseURL() . $inv_page->URLSegment . '/pay/' . $this->InvID;
+	}
+	
+	public function getInvoicePage() {
+		return DataObject::get_one('InvoicePage');
+	}
+	
+	public function getTotalWithCurrency() {
+		$inv_page = $this->getInvoicePage();
+		$total = $this->addUpLineItems();
+		if($this->doChargeTax()) {
+			$total += $this->calculateTax($total);
+		}
+		$symbol = $inv_page->getCurrencySymbol();
+		if($symbol['pos'] == 'left') {
+			return $symbol['symbol'] . number_format($total, 2);
+		} else {
+			return number_format($total, 2) . ' ' . $symbol['symbol'];
+		}
 	}
 
 }

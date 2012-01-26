@@ -4,8 +4,13 @@ An invoicing system for SilverStripe.
 
 INSTALLATION:
 
-Download and extract to your SilverStripe directory. Rename the directory to "stokedinvoices" and run dev/build.
+Download and extract to your SilverStripe directory. Rename the extracted folder to "stokedinvoices" and run dev/build.
 
 USAGE:
 
-You will get two things: an Invoices tab in the admin, and an Invoices page in the SiteTree. The tab is to be used for managing invoices, while the invoice page is to be used for options, etc.
+You will get two things: an Invoices tab in the admin, and an Invoices page in the SiteTree. The tab is to be used for managing invoices, while the invoice page is to be used for company info, payment options, etc.
+
+If you don't want the invoice page to show up in your menus or search, simply disable it via the checkboxes under the Behavior tab. You can also set the group-based client access permissions there too.
+
+To use the online payment system, you will need an account at Stripe.com. Stoked Invoices only supports this payment processing system at the moment. To set up your invoices for online payment,
+simply enter both your private and public API keys in the Invoices Page options.
