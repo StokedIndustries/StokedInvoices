@@ -177,9 +177,7 @@ class InvoicePage_Controller extends Page_Controller {
 	
 		$inv = $this->getInvoice();
 		
-		if($this->EnableOnlinePayments) {
-			Requirements::customScript("Stripe.setPublishableKey('" . $this->PublicPaymentAPIKey . "');");
-		}
+		Requirements::customScript("Stripe.setPublishableKey('" . $this->PublicPaymentAPIKey . "');");
 		
 		return $this->customise(array(
 			'Title' => 'Make a Payment',
