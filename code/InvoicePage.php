@@ -247,6 +247,7 @@ class InvoicePage_Controller extends Page_Controller {
 		}
 		
 		$invs = DataObject::get('Invoice', '', $sort);
+		$param = Convert::raw2sql($param);
 		
 		return $this->customise(array(
 			'Invoices' => $invs,
