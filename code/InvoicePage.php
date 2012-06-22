@@ -288,7 +288,7 @@ class InvoicePage_Controller extends Page_Controller {
 	
 	private function getInvoice($id = null) {
 		
-		$param = ($id) ? $id : Director::URLParam('ID');
+		$param = ($id) ? $id : (int) Director::URLParam('ID');
 		
 		return DataObject::get_one("Invoice", "InvID = '". Convert::raw2sql($param) ."'");
 		
